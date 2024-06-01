@@ -1,0 +1,9 @@
+{
+  "identifier": "erkle64.InventorySortOrder",
+  "displayName": "InventorySortOrder",
+  "assetBundles": [ ],
+  "assemblies": [
+    "InventorySortOrder.dll"
+  ]
+}
+
