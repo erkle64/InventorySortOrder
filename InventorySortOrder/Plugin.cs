@@ -88,7 +88,6 @@ namespace InventorySortOrder
                 var inventoryPtr = InventoryManager.inventoryManager_getInventoryPtr(inventoryId);
                 var slotCount = InventoryManager.inventoryManager_getInventorySlotCountByPtr(inventoryPtr);
                 var slots = new ItemSlot[slotCount];
-                log.Log($"Slot count: {slotCount}");
                 var runningTemplateIdx = GameRoot.RunningIdxTable_itemTemplates_all;
                 uint lastOccupiedSlot = 0;
                 for (uint slotId = 0; slotId < slotCount; slotId++)
@@ -98,7 +97,6 @@ namespace InventorySortOrder
                     ushort lockedTemplateRunningIdx = 0;
                     IOBool isLocked = IOBool.iofalse;
                     InventoryManager.inventoryManager_getSingleSlotDataByPtr(inventoryPtr, slotId, ref itemTemplateRunningIdx, ref itemCount, ref lockedTemplateRunningIdx, ref isLocked, IOBool.iofalse);
-                    log.Log($"Slot {slotId}: itemTemplateRunningIdx: {itemTemplateRunningIdx}, itemCount: {itemCount}, lockedTemplateRunningIdx: {lockedTemplateRunningIdx}, isLocked: {isLocked}");
                     if (itemCount > 0)
                     {
                         var itemTemplate = runningTemplateIdx.getDataByRunningIdx(itemTemplateRunningIdx);
@@ -112,7 +110,6 @@ namespace InventorySortOrder
                         lastOccupiedSlot = slotId;
                     }
                 }
-                log.Log($"Last occupied slot: {lastOccupiedSlot}");
 
                 Array.Sort(slots, (a, b) =>
                 {
@@ -121,7 +118,6 @@ namespace InventorySortOrder
                     if (a.sortIndex != b.sortIndex) return a.sortIndex.CompareTo(b.sortIndex);
                     return a.name.CompareTo(b.name);
                 });
-                log.Log($"Sorted slots:\n{string.Join("\n", slots.Select(x => $"{x.slotId} {x.sortIndex} {x.name}"))}");
 
                 var shiftMap = new uint[lastOccupiedSlot + 1];
                 for (uint slotId = 0; slotId <= lastOccupiedSlot; slotId++)
@@ -133,10 +129,8 @@ namespace InventorySortOrder
                 {
                     for (uint slotId = 0; slotId <= lastOccupiedSlot; slotId++)
                     {
-                        log.Log($"Sorting slot {slotId}");
                         while (shiftMap[slotId] != slotId)
                         {
-                            log.Log($"Moving slot {slotId} to {shiftMap[slotId]}");
                             GameRoot.addLockstepEvent(new ItemMoveEvent(clientCharacter, inventoryId, slotId, inventoryId, shiftMap[slotId]));
                             var temp = shiftMap[slotId];
                             shiftMap[slotId] = shiftMap[temp];
